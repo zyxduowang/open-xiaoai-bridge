@@ -1,0 +1,28 @@
+name: Build ARM64 wheel
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-arm64.yml"
+      - "native/**"
+      - "pyproject.toml"
+      - "Cargo.toml"
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build wheel (maturin, aarch64)
+        run: |
+          python -m pip install --upgrade pip maturin
+          maturin build --release --out dist
+      - name: Upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-xiaoai-bridge-arm64-wheel
+          path: dist/*.whl
